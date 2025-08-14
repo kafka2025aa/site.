@@ -1,0 +1,688 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>karfaoui amar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        .file-icon {
+            font-size: 2rem;
+        }
+        .login-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .file-item {
+            transition: all 0.3s ease;
+        }
+        .file-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .activity-item {
+            transition: all 0.3s ease;
+        }
+        .activity-item:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-right-width: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Authentication Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center login-container">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 transform transition-all duration-300">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">karfaoui amar</h1>
+                <p class="text-gray-600">تسجيل الدخول إلى حسابك</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">اسم المستخدم</label>
+                    <input 
+                        type="text" 
+                        id="username"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                        placeholder="أدخل اسم المستخدم"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">كلمة المرور</label>
+                    <input 
+                        type="password" 
+                        id="password"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                        placeholder="أدخل كلمة المرور"
+                    >
+                </div>
+                
+                <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    <p>اسم المستخدم أو كلمة المرور غير صحيحة</p>
+                </div>
+                
+                <button 
+                    id="loginBtn"
+                    class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                >
+                    تسجيل الدخول
+                </button>
+            </div>
+            
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>يوزرات متاحة: amar (1970) و abdo (2025)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="hidden min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold text-gray-800">karfaoui amar</h1>
+                        <span class="mr-3 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">مساحة غير محدودة</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-600">
+                            مرحباً، <span id="welcomeUsername" class="font-semibold"></span>
+                        </div>
+                        <button id="logoutBtn" class="text-gray-500 hover:text-gray-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Tabs -->
+            <div class="mb-8 border-b border-gray-200">
+                <nav class="flex space-x-8">
+                    <button 
+                        id="filesTab"
+                        class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                        الملفات
+                    </button>
+                    <button 
+                        id="notesTab"
+                        class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                        المذكرة
+                    </button>
+                    <button 
+                        id="activityTab"
+                        class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                        النشاط
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Files Tab -->
+            <div id="filesContent" class="space-y-6">
+                <!-- Upload Section -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 sm:mb-0">إدارة الملفات</h2>
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <input type="file" id="fileInput" class="hidden" multiple>
+                            <button id="uploadBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                رفع ملف
+                            </button>
+                            <button id="createFolderBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                إنشاء مجلد
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- File List -->
+                    <div id="fileList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <!-- Files will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div id="notesContent" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">المذكرة</h2>
+                    
+                    <!-- New Note Form -->
+                    <div class="mb-6">
+                        <textarea 
+                            id="newNote"
+                            placeholder="اكتب ملاحظة جديدة..." 
+                            rows="4"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                        ></textarea>
+                        <div class="flex justify-between items-center mt-3">
+                            <div id="noteCounter" class="text-sm text-gray-500">
+                                0 / 1000 حرف
+                            </div>
+                            <button 
+                                id="saveNoteBtn"
+                                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                            >
+                                حفظ الملاحظة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notes List -->
+                    <div id="notesList" class="space-y-4">
+                        <!-- Notes will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Tab -->
+            <div id="activityContent" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">سجل النشاط</h2>
+                    
+                    <!-- Activity Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                <div class="mr-4">
+                                    <p id="fileCount" class="text-2xl font-bold">0</p>
+                                    <p class="text-sm opacity-90">ملف تم حفظه</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                <div class="mr-4">
+                                    <p id="noteCount" class="text-2xl font-bold">0</p>
+                                    <p class="text-sm opacity-90">ملاحظة محفوظة</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div class="mr-4">
+                                    <p id="lastActivity" class="text-2xl font-bold"></p>
+                                    <p class="text-sm opacity-90">آخر نشاط</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity List -->
+                    <div id="activityList" class="space-y-4">
+                        <!-- Activities will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // App state
+        const state = {
+            authenticated: false,
+            username: '',
+            activeTab: 'files',
+            files: [],
+            notes: [],
+            validUsers: {
+                'amar': '1970',
+                'abdo': '2025'
+            }
+        };
+
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const app = document.getElementById('app');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorDiv = document.getElementById('error');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const welcomeUsername = document.getElementById('welcomeUsername');
+        const filesTab = document.getElementById('filesTab');
+        const notesTab = document.getElementById('notesTab');
+        const activityTab = document.getElementById('activityTab');
+        const filesContent = document.getElementById('filesContent');
+        const notesContent = document.getElementById('notesContent');
+        const activityContent = document.getElementById('activityContent');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const createFolderBtn = document.getElementById('createFolderBtn');
+        const fileList = document.getElementById('fileList');
+        const newNoteInput = document.getElementById('newNote');
+        const noteCounter = document.getElementById('noteCounter');
+        const saveNoteBtn = document.getElementById('saveNoteBtn');
+        const notesList = document.getElementById('notesList');
+        const fileCount = document.getElementById('fileCount');
+        const noteCount = document.getElementById('noteCount');
+        const lastActivity = document.getElementById('lastActivity');
+        const activityList = document.getElementById('activityList');
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Update UI
+        function updateUI() {
+            // Update file count
+            fileCount.textContent = state.files.length;
+            
+            // Update note count
+            noteCount.textContent = state.notes.length;
+            
+            // Update last activity
+            const now = new Date();
+            lastActivity.textContent = formatDate(now);
+            
+            // Render files
+            renderFiles();
+            
+            // Render notes
+            renderNotes();
+            
+            // Render activity
+            renderActivity();
+        }
+
+        // Render files
+        function renderFiles() {
+            if (state.files.length === 0) {
+                fileList.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">لا توجد ملفات بعد</h3>
+                        <p class="mt-1 text-sm text-gray-500">ابدأ برفع ملفاتك الأولى.</p>
+                        <div class="mt-6">
+                            <button id="emptyUploadBtn" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                رفع ملف
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('emptyUploadBtn').addEventListener('click', () => {
+                    fileInput.click();
+                });
+            } else {
+                fileList.innerHTML = '';
+                state.files.forEach((file, index) => {
+                    const fileElement = document.createElement('div');
+                    fileElement.className = 'file-item bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200';
+                    fileElement.innerHTML = `
+                        <div class="flex items-center mb-3">
+                            <div class="text-blue-500 file-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div class="mr-3 flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>
+                                <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>
+                            </div>
+                            <button data-index="${index}" class="downloadFileBtn text-gray-400 hover:text-green-500 transition-colors mr-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </button>
+                            <button data-index="${index}" class="deleteFileBtn text-gray-400 hover:text-red-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            <span>${formatDate(file.uploaded)}</span>
+                        </div>
+                    `;
+                    fileList.appendChild(fileElement);
+                });
+                
+                // Add event listeners to download buttons
+                document.querySelectorAll('.downloadFileBtn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.closest('button').dataset.index;
+                        downloadFile(index);
+                    });
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.deleteFileBtn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.closest('button').dataset.index;
+                        deleteFile(index);
+                    });
+                });
+            }
+        }
+
+        // Render notes
+        function renderNotes() {
+            if (state.notes.length === 0) {
+                notesList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <p class="mt-2">لا توجد ملاحظات بعد</p>
+                    </div>
+                `;
+            } else {
+                notesList.innerHTML = '';
+                state.notes.forEach((note, index) => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'border border-gray-200 rounded-lg p-4';
+                    noteElement.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-gray-800 whitespace-pre-wrap">${note.text}</p>
+                            <button data-index="${index}" class="deleteNoteBtn text-gray-400 hover:text-red-500 ml-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            <span>${formatDate(note.timestamp)}</span>
+                        </div>
+                    `;
+                    notesList.appendChild(noteElement);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.deleteNoteBtn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.closest('button').dataset.index;
+                        deleteNote(index);
+                    });
+                });
+            }
+        }
+
+        // Render activity
+        function renderActivity() {
+            const activities = [];
+            
+            // Add file activities
+            state.files.forEach(file => {
+                activities.push({
+                    id: file.id,
+                    type: 'file',
+                    description: `تم رفع ملف "${file.name}"`,
+                    timestamp: file.uploaded
+                });
+            });
+            
+            // Add note activities
+            state.notes.forEach(note => {
+                activities.push({
+                    id: note.id,
+                    type: 'note',
+                    description: 'تمت إضافة ملاحظة جديدة',
+                    timestamp: note.timestamp
+                });
+            });
+            
+            // Sort by timestamp (newest first)
+            activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (activities.length === 0) {
+                activityList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="mt-2">لا يوجد نشاط بعد</p>
+                    </div>
+                `;
+            } else {
+                activityList.innerHTML = '';
+                activities.forEach(activity => {
+                    const activityElement = document.createElement('div');
+                    activityElement.className = 'activity-item border-r-4 border-gray-200 border-r-transparent p-4 bg-white rounded-lg hover:border-r-indigo-500 transition-all duration-200';
+                    activityElement.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 rounded-full ${activity.type === 'file' ? 'bg-indigo-100' : 'bg-green-100'} flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ${activity.type === 'file' ? 'text-indigo-600' : 'text-green-600'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${activity.type === 'file' ? 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' : 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'}" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="mr-4 flex-1">
+                                <p class="text-sm text-gray-800">${activity.description}</p>
+                                <p class="text-xs text-gray-500 mt-1">${formatDate(activity.timestamp)}</p>
+                            </div>
+                        </div>
+                    `;
+                    activityList.appendChild(activityElement);
+                });
+            }
+        }
+
+        // Login function
+        function login() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (state.validUsers[username] && state.validUsers[username] === password) {
+                state.authenticated = true;
+                state.username = username;
+                loginModal.classList.add('hidden');
+                app.classList.remove('hidden');
+                welcomeUsername.textContent = username;
+                
+                // Load saved data
+                try {
+                    const savedData = localStorage.getItem(`karfaoui_${username}`);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        state.files = data.files || [];
+                        state.notes = data.notes || [];
+                    }
+                } catch (e) {
+                    console.log('No saved data found');
+                }
+                
+                updateUI();
+            } else {
+                errorDiv.classList.remove('hidden');
+                setTimeout(() => {
+                    errorDiv.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            // Save current data
+            const data = {
+                files: state.files,
+                notes: state.notes
+            };
+            try {
+                localStorage.setItem(`karfaoui_${state.username}`, JSON.stringify(data));
+            } catch (e) {
+                console.log('Could not save data');
+            }
+            
+            state.authenticated = false;
+            state.username = '';
+            state.files = [];
+            state.notes = [];
+            app.classList.add('hidden');
+            loginModal.classList.remove('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
+        }
+
+        // Handle file upload
+        function handleFileUpload() {
+            const files = fileInput.files;
+            if (files.length === 0) return;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Create a URL for the file
+                const fileURL = URL.createObjectURL(file);
+                
+                state.files.push({
+                    id: Date.now() + i,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploaded: new Date().toISOString(),
+                    url: fileURL
+                });
+            }
+            
+            fileInput.value = '';
+            updateUI();
+        }
+
+        // Download file
+        function downloadFile(index) {
+            const file = state.files[index];
+            const a = document.createElement('a');
+            a.href = file.url;
+            a.download = file.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Create folder
+        function createFolder() {
+            const folderName = prompt('أدخل اسم المجلد:');
+            if (folderName && folderName.trim()) {
+                alert(`تم إنشاء مجلد "${folderName}"`);
+            }
+        }
+
+        // Add note
+        function addNote() {
+            const text = newNoteInput.value.trim();
+            if (text) {
+                state.notes.push({
+                    id: Date.now(),
+                    text: text,
+                    timestamp: new Date().toISOString()
+                });
+                newNoteInput.value = '';
+                updateNoteCounter();
+                updateUI();
+            }
+        }
+
+        // Update note counter
+        function updateNoteCounter() {
+            const length = newNoteInput.value.length;
+            noteCounter.textContent = `${length} / 1000 حرف`;
+        }
+
+        // Delete file
+        function deleteFile(index) {
+            // Revoke the object URL to free memory
+            URL.revokeObjectURL(state.files[index].url);
+            state.files.splice(index, 1);
+            updateUI();
+        }
+
+        // Delete note
+        function deleteNote(index) {
+            state.notes.splice(index, 1);
+            updateUI();
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            state.activeTab = tab;
+            
+            // Reset all tabs
+            filesTab.className = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+            notesTab.className = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+            activityTab.className = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+            
+            // Hide all content
+            filesContent.classList.add('hidden');
+            notesContent.classList.add('hidden');
+            activityContent.classList.add('hidden');
+            
+            // Show selected tab
+            if (tab === 'files') {
+                filesTab.className = 'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+                filesContent.classList.remove('hidden');
+            } else if (tab === 'notes') {
+                notesTab.className = 'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+                notesContent.classList.remove('hidden');
+            } else if (tab === 'activity') {
+                activityTab.className = 'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+                activityContent.classList.remove('hidden');
+            }
+        }
+
+        // Event Listeners
+        loginBtn.addEventListener('click', login);
+        
+        logoutBtn.addEventListener('click', logout);
+        
+        filesTab.addEventListener('click', () => switchTab('files'));
+        notesTab.addEventListener('click', () => switchTab('notes'));
+        activityTab.addEventListener('click', () => switchTab('activity'));
+        
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileUpload);
+        
+        createFolderBtn.addEventListener('click', createFolder);
+        
+        newNoteInput.addEventListener('input', updateNoteCounter);
+        saveNoteBtn.addEventListener('click', addNote);
+        
+        // Initialize
+        updateNoteCounter();
+        switchTab('files');
+    </script>
+</body>
+</html>
+```
